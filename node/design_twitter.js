@@ -25,15 +25,12 @@ Twitter.prototype.postTweet = function(userId, tweetId) {
 Twitter.prototype.getNewsFeed = function(userId) {
     const user = this.users[userId] = this.users[userId] || {followed: [], posts: []};
     posts = user.posts.slice();
-    if(posts.length >= 10) {
-        return posts.map(post => post.id);
-    }
     const followed = user.followed;
     for(let i = 0; i < followed.length; i++) {
         let followeeId = followed[i];
         let followee = this.users[followeeId];
         if(followee) {
-            posts.push.apply(posts, followee.posts.slice(0, 10));
+            posts.push.apply(posts, followee.posts.slice());
         }
     }
     return posts
@@ -51,7 +48,8 @@ Twitter.prototype.getNewsFeed = function(userId) {
  */
 Twitter.prototype.follow = function(followerId, followeeId) {
     const user = this.users[followerId] = this.users[followerId] || {followed: [], posts: []};
-    user.followed.push(followeeId);
+    const index = user.followed.indexOf(followeeId);
+    if(index < 0) user.followed.push(followeeId);
 };
 
 /** 
@@ -94,4 +92,5 @@ function test(actions, params) {
     console.log(context.results);
 }
 
-test(["Twitter", "postTweet", "getNewsFeed", "follow", "postTweet", "getNewsFeed", "unfollow", "getNewsFeed"], [[], [1, 5], [1], [1, 2], [2, 6], [1], [1, 2], [1]]);
+// test(["Twitter", "postTweet", "getNewsFeed", "follow", "postTweet", "getNewsFeed", "unfollow", "getNewsFeed"], [[], [1, 5], [1], [1, 2], [2, 6], [1], [1, 2], [1]]);
+test(["Twitter","postTweet","postTweet","postTweet","postTweet","postTweet","postTweet","postTweet","postTweet","postTweet","postTweet","getNewsFeed"], [[],[1,5],[1,3],[1,101],[1,13],[1,10],[1,2],[1,94],[1,505],[1,333],[1,22],[1]]);
